@@ -8,14 +8,7 @@ carImg.src = "./images/car.png"
 let randomObstPosition = Math.floor(Math.random() * 500);
 let randomObstWith = Math.floor(Math.random() * 300)+ 50;
 
-let obstaclesArr = [];
-
-
-
-
-
-
-
+let score = 0;
 
 window.onload = () => {
   document.getElementById('start-button').onclick = () => {
@@ -27,14 +20,19 @@ window.onload = () => {
     let player = new Car
     player.draw()
 
-    let rock1 = new Obstacles()
+    let rock1 = new Obstacles(400,'orange')
     rock1.draw()
 
+    let rock2 = new Obstacles(200,'green')
+    rock2.draw()
 
-    /* let inverval_timer = setInterval(function() { 
-      let rock = new Obstacles(randomObstPosition, randomObstWith)
-      rock.draw()
-    }, 3000); */
+    let rock3 = new Obstacles(0, 'black')
+    rock3.draw()
+
+    score = 0
+
+
+    
     
 
     document.addEventListener("keydown", (e) => {
@@ -47,15 +45,30 @@ window.onload = () => {
       }
     })
 
-    
 
     const gameOver = () => {
       player.gameOver = true
       rock1.gameOver = true
-      // clearInterval(inverval_timer); 
+      rock2.gameOver = true
+      rock3.gameOver = true
+      drawGameOver()
     }
+
+    const drawGameOver = () => {
+      let text = 'GAME OVER'
+      ctx.fillStyle = "black"
+      ctx.font = "70px Arial"
+      ctx.fillText(text, 40,200)
+    }
+
+    const drawScore = () => {
+      ctx.fillStyle = "white"
+      ctx.font = "40px Arial"
+      ctx.fillText(`Score: ${score}`, 70,70)
+    }
+
     const checkCollitions = () => {
-      if (player.contains(rock1)){
+      if (player.contains(rock1) || player.contains(rock2) || player.contains(rock3)){
         gameOver()
       }}
 
@@ -64,8 +77,12 @@ window.onload = () => {
       ctx.clearRect(0,0,canvas.width, canvas.height)
       player.draw()
       rock1.draw()
-      rock1.moveDown ()
-      // drawScore()
+      rock1.moveDown()
+      rock2.draw()
+      rock2.moveDown ()
+      rock3.draw()
+      rock3.moveDown ()
+      drawScore()
       checkCollitions()
       requestAnimationFrame(update)
     }
@@ -87,12 +104,12 @@ class Car {
     ctx.drawImage(carImg, this.x, this.y, this.w, this.h)
   }
   moveLeft() {
-    if (this.x <= 0) {
+    if (this.x <= 0 || this.gameOver == true) {
       return
     } this.x -= this.w
   }
   moveRight() {
-    if (this.x >= canvas.width - this.w) {
+    if (this.x >= canvas.width - this.w || this.gameOver == true) {
       return
     } this.x += this.w
   }
@@ -105,13 +122,13 @@ class Car {
 }
 
   class Obstacles {
-    constructor() {
+    constructor(y) {
       this.x = Math.floor(Math.random() * 300);
-      this.y = 0
+      this.y = y
       this.w = Math.floor(Math.random() * 200)+ 50;
       this.h = 20
 
-      this.color = 'black'
+      this.color = '#860007'
 
       this.gameOver = false
     }
@@ -124,6 +141,13 @@ class Car {
         if (!this.gameOver){
         this.y += 1
       }
+        if (this.y > canvas.height) {
+          this.x = Math.floor(Math.random() * 300)
+          this.y = 0
+          this.w = Math.floor(Math.random() * 200)+ 50
+          score ++
+          console.log(score)
+        }
     }
   }
 
